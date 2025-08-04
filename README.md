@@ -28,7 +28,7 @@ A simple, containerized chat application using FastAPI, PostgreSQL, and local LL
 
 ### Architecture
 
-<img width="800" alt="Chat drawio" src="https://github.com/user-attachments/assets/1b91cad2-025d-4d37-bc79-7ef859583a74" />
+<img width="600" alt="Chat drawio" src="https://github.com/user-attachments/assets/1b91cad2-025d-4d37-bc79-7ef859583a74" />
 
 #### Container Design
 - **App Container**: Python 3.11 with FastAPI
