@@ -2,7 +2,7 @@
 
 A simple, containerized chat application using FastAPI, PostgreSQL, and local LLM integration via LM Studio.
 
-<img width="593" height="754" alt="Screenshot 2025-08-04 at 8 48 23 PM" src="https://github.com/user-attachments/assets/64376e28-d602-45e6-8fa2-484b5b008627" />
+<img width="400" alt="Screenshot 2025-08-04 at 8 48 23 PM" src="https://github.com/user-attachments/assets/ab6a18dd-8369-4411-982d-d095dc4e7419" />
 
 
 ## Application Overview
@@ -28,7 +28,7 @@ A simple, containerized chat application using FastAPI, PostgreSQL, and local LL
 
 ### Architecture
 
-<img width="1340" height="980" alt="Chat drawio" src="https://github.com/user-attachments/assets/1b91cad2-025d-4d37-bc79-7ef859583a74" />
+<img width="800" alt="Chat drawio" src="https://github.com/user-attachments/assets/1b91cad2-025d-4d37-bc79-7ef859583a74" />
 
 #### Container Design
 - **App Container**: Python 3.11 with FastAPI
