@@ -30,11 +30,10 @@ A simple, containerized chat application using FastAPI, PostgreSQL, and local LL
 - **DB Container**: PostgreSQL with persistent volumes
 
 #### Request Flow
-1. User submits form → FastAPI receives POST
-2. Save user message → Display immediately with spinner
-3. Meta refresh → Triggers `/process` endpoint  
-4. LLM API call → Parse markdown → Save response
-5. Redirect to main page → Show complete conversation
+1. **User Input**: Submit message via form
+2. **Immediate Feedback**: User message appears instantly with loading spinner
+3. **Background Processing**: LLM generates response while user waits
+4. **Display Result**: Page refreshes to show the complete conversation
 
 ## Quick Start
 
