@@ -1,0 +1,21 @@
+# docker-compose.yml
+version: "3.9"
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: chatuser
+      POSTGRES_PASSWORD: secretpassword
+      POSTGRES_DB: chatdb
+    ports:
+      - "5432:5432"  # Exposes Postgres if you want to connect from outside
+
+  app:
+    build: .
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://chatuser:secretpassword@db:5432/chatdb

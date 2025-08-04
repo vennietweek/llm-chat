@@ -1,0 +1,249 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  overflow: hidden; /* Prevent body scrolling */
+}
+
+.wrapper {
+  height: 100vh;
+  position: relative;
+} 
+
+.chat-window {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 12vh; /* Leave space for input form */
+  overflow-y: auto;
+  padding: 16px;
+  padding-bottom: 24px; /* Extra padding at bottom for better spacing */
+  background-color: #f5f5f5;
+  scroll-behavior: smooth;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-window::after {
+  content: "";
+  margin-top: auto;
+}
+
+.chat-bubble {
+  max-width: 70%;
+  padding: 12px 16px;
+  margin: 12px 0;
+  border-radius: 18px;
+  word-wrap: break-word;
+  display: block;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  position: relative;
+}
+
+.user-bubble {
+  background-color: #007bff;
+  color: white;
+  margin-left: auto;
+  text-align: right;
+  border-bottom-right-radius: 4px;
+}
+
+.llm-bubble {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  margin-right: auto;
+  border-bottom-left-radius: 4px;
+  color: #333;
+}
+
+.bubble-role {
+  font-weight: bold;
+  font-size: 0.7em;
+  color: inherit;
+  opacity: 0.6;
+  display: block;
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+.bubble-message {
+  line-height: 1.5;
+  font-size: 0.95em;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+}
+
+/* Markdown styling within chat bubbles */
+.bubble-message h1, .bubble-message h2, .bubble-message h3, 
+.bubble-message h4, .bubble-message h5, .bubble-message h6 {
+  margin: 12px 0 8px 0;
+  font-weight: 600;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+}
+
+.bubble-message h1 { font-size: 1.3em; }
+.bubble-message h2 { font-size: 1.2em; }
+.bubble-message h3 { font-size: 1.1em; }
+.bubble-message h4, .bubble-message h5, .bubble-message h6 { font-size: 1em; }
+
+.bubble-message p {
+  margin: 8px 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+}
+
+.bubble-message ul, .bubble-message ol {
+  margin: 8px 0;
+  padding-left: 20px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+}
+
+.bubble-message li {
+  margin: 4px 0;
+}
+
+.bubble-message code {
+  background-color: rgba(0,0,0,0.1);
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.bubble-message pre {
+  background-color: rgba(0,0,0,0.1);
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 8px 0;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+}
+
+.bubble-message pre code {
+  background: none;
+  padding: 0;
+}
+
+.bubble-message blockquote {
+  border-left: 3px solid #ddd;
+  margin: 8px 0;
+  padding-left: 12px;
+  color: #666;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+}
+
+.bubble-message strong, .bubble-message b {
+  font-weight: 600;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+}
+
+.bubble-message em, .bubble-message i {
+  font-style: italic;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+}
+
+.bubble-message table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 8px 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+}
+
+.bubble-message th, .bubble-message td {
+  border: 1px solid #ddd;
+  padding: 6px 8px;
+  text-align: left;
+}
+
+.bubble-message th {
+  background-color: rgba(0,0,0,0.1);
+  font-weight: 600;
+}
+
+.input-form {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-top: 1px solid #e0e0e0;
+  background-color: white;
+  z-index: 1000;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+  height: 12vh; /* Use 12% of viewport height for input area */
+  min-height: 60px; /* Minimum height to ensure usability on very small screens */
+  max-height: 100px; /* Maximum height to prevent it from being too large */
+  box-sizing: border-box;
+  gap: 12px;
+  margin: 0; /* Ensure no margin */
+}
+
+.input-form input[type="text"] {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 1em;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+}
+
+.input-form input[type="text"]:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}
+
+.input-form button {
+  padding: 12px 20px;
+  font-size: 1em;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.input-form button:hover {
+  background-color: #0056b3;
+}
+
+/* Loading animation for LLM thinking */
+.loading-dots {
+  display: inline-block;
+}
+
+.loading-dots::after {
+  content: "...";
+  animation: loading-dots 1.5s infinite;
+}
+
+@keyframes loading-dots {
+  0% { content: ""; }
+  25% { content: "."; }
+  50% { content: ".."; }
+  75% { content: "..."; }
+  100% { content: "..."; }
+}
+
+/* Alternative spinner animation */
+.loading-spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid #ccc;
+  border-top: 2px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-left: 8px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
