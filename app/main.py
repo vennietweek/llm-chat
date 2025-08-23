@@ -22,7 +22,7 @@ app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="stat
 
 # LLM endpoint
 LM_STUDIO_API_URL = "http://host.docker.internal:1234/v1/chat/completions"
-LM_STUDIO_MODEL = os.getenv("LM_STUDIO_MODEL", "mistral")
+LM_STUDIO_MODEL = os.getenv("LM_STUDIO_MODEL", "google/gemma-3-12b")
 
 async def get_model_info():
     """Get model information including token limits from LM Studio"""
