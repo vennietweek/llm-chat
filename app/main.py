@@ -21,26 +21,50 @@ BASE_DIR = Path(__file__).resolve().parent
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 
 # LLM endpoint
-LM_STUDIO_API_URL = "http://host.docker.internal:1234/v1/chat/completions"
-LM_STUDIO_MODEL = os.getenv("LM_STUDIO_MODEL", "google/gemma-3-12b")
+LLM_API_URL = "http://host.docker.internal:11434/api/chat"
+LLM_MODEL = os.getenv("LLM_MODEL", "gemma3:4b")
 
 async def get_model_info():
-    """Get model information including token limits from LM Studio"""
+    """Get model information including token limits from LLM API"""
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
-            response = await client.get(f"{LM_STUDIO_API_URL.replace('/chat/completions', '/models')}")
+            response = await client.get("http://host.docker.internal:11434/api/tags")
             if response.status_code == 200:
                 models = response.json()
-                for model in models.get("data", []):
-                    if model.get("id") == LM_STUDIO_MODEL:
+                for model in models.get("models", []):
+                    if model.get("name") == LLM_MODEL:
                         return {
-                            "context_length": model.get("context_length", 4096),
-                            "max_tokens": model.get("max_tokens", 4096)
+                            "context_length": 8192,  # Default for most modern models
+                            "max_tokens": 4096
                         }
     except Exception as e:
         print(f"[WARNING] Could not get model info: {e}")
     
-    return {"context_length": 4096, "max_tokens": 4096}
+    return {"context_length": 8192, "max_tokens": 4096}
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for load balancers"""
+    try:
+        # Check database connection
+        await database.fetch_one("SELECT 1")
+        db_status = "healthy"
+    except:
+        db_status = "unhealthy"
+    
+    try:
+        # Check LLM service
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            response = await client.get("http://localhost:11434/api/tags")
+            llm_status = "healthy" if response.status_code == 200 else "unhealthy"
+    except:
+        llm_status = "unhealthy"
+    
+    return {
+        "status": "healthy" if db_status == "healthy" and llm_status == "healthy" else "unhealthy",
+        "database": db_status,
+        "llm_service": llm_status
+    }
 
 def estimate_tokens(text):
     """Estimate token count for a given text using tiktoken"""
@@ -166,21 +190,27 @@ async def query_llm(user_input):
         
         final_history = truncated_history
 
+        # LLM API format
+        messages = []
+        # Add system message if any
+        messages.append({"role": "system", "content": "You are a helpful assistant."})
+        # Add history
+        messages.extend(final_history)
+        # Add current user input
+        messages.append({"role": "user", "content": user_input})
+
         payload = {
-            "model": LM_STUDIO_MODEL,
-            "messages": [
-                {"role": "system", "content": "You are a helpful assistant."},
-                *final_history,
-                {"role": "user", "content": user_input}
-            ]
+            "model": LLM_MODEL,
+            "messages": messages,
+            "stream": False
         }
 
         # LLM request
         async with httpx.AsyncClient(timeout=120.0) as client:
-            response = await client.post(LM_STUDIO_API_URL, json=payload)
+            response = await client.post(LLM_API_URL, json=payload)
             response.raise_for_status()
             data = response.json()
-            llm_response = data["choices"][0]["message"]["content"]
+            llm_response = data["message"]["content"]
 
         # Clean up the LLM response - remove quotes and escape characters
         llm_response = llm_response.strip()
@@ -197,7 +227,7 @@ async def query_llm(user_input):
     except Exception as e:
         print("\n[⚠️ LLM API ERROR]", traceback.format_exc())
         if "timeout" in str(e).lower():
-            return "[LLM timed out - please try again with a shorter message or check if LM Studio is running]"
+            return "[LLM timed out - please try again with a shorter message or check if the LLM service is running]"
         else:
             return f"[LLM unavailable: {str(e)}]"
 
