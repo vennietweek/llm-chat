@@ -22,7 +22,7 @@ app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="stat
 
 # LLM endpoint
 LLM_API_URL = "http://host.docker.internal:11434/api/chat"
-LLM_MODEL = os.getenv("LLM_MODEL", "gemma3:4b")
+LLM_MODEL = os.getenv("LLM_MODEL", "mistral:7b")
 
 async def get_model_info():
     """Get model information including token limits from LLM API"""
@@ -41,30 +41,6 @@ async def get_model_info():
         print(f"[WARNING] Could not get model info: {e}")
     
     return {"context_length": 8192, "max_tokens": 4096}
-
-@app.get("/health")
-async def health_check():
-    """Health check endpoint for load balancers"""
-    try:
-        # Check database connection
-        await database.fetch_one("SELECT 1")
-        db_status = "healthy"
-    except:
-        db_status = "unhealthy"
-    
-    try:
-        # Check LLM service
-        async with httpx.AsyncClient(timeout=5.0) as client:
-            response = await client.get("http://localhost:11434/api/tags")
-            llm_status = "healthy" if response.status_code == 200 else "unhealthy"
-    except:
-        llm_status = "unhealthy"
-    
-    return {
-        "status": "healthy" if db_status == "healthy" and llm_status == "healthy" else "unhealthy",
-        "database": db_status,
-        "llm_service": llm_status
-    }
 
 def estimate_tokens(text):
     """Estimate token count for a given text using tiktoken"""
