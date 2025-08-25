@@ -19,3 +19,5 @@ services:
       - "8000:8000"
     environment:
       DATABASE_URL: postgresql://chatuser:secretpassword@db:5432/chatdb
+      LLM_API_URL: ${LLM_API_URL:-http://host.docker.internal:1234/v1/chat/completions}
+      LLM_MODEL: ${LLM_MODEL:-google/gemma-3-12b}
